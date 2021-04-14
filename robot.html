@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
+<!--<script src="roslib.js"></script>-->
+<script type="text/javascript" type="text/javascript">
+  // Connecting to ROS
+  var ros = new ROSLIB.Ros({
+    url : 'ws://localhost:9090'
+  });
+
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+  });
+
+  // Subscribing to a Topic
+  var listener = new ROSLIB.Topic({
+    ros : ros,
+    name : '/odom',
+    messageType : 'nav_msgs/Odometry'
+  });
+  
+  listener.subscribe
+  (
+      function(message) 
+      {
+          document.getElementById("px").innerHTML = "X: " + JSON.stringify(message.pose.pose.position.x);
+          document.getElementById("py").innerHTML = "Y: " + JSON.stringify(message.pose.pose.position.y);
+          document.getElementById("pz").innerHTML = "Z: " + JSON.stringify(message.pose.pose.position.z);          
+      }
+  );
+
+  
+  
+</script>
+</head>
+
+<body>
+  <div id="px"></div>
+  <div id="py"></div>
+  <div id="pz"></div>
+</body>
+</html>

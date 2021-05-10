@@ -1,2 +1,2 @@
 # Robot_Web_Tools
-Web-based controller for robot. Made using ROSLIBJS.
+Web-based controller for AR-Drone, made using ROSLIBJS.

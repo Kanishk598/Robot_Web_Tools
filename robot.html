@@ -6,9 +6,10 @@
 <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
 <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
 
-<!--<script src="roslib.js"></script>-->
 <script type="text/javascript" type="text/javascript">
   // Connecting to ROS
+  // -----------------
+
   var ros = new ROSLIB.Ros({
     url : 'ws://localhost:9090'
   });
@@ -25,31 +26,163 @@
     console.log('Connection to websocket server closed.');
   });
 
-  // Subscribing to a Topic
-  var listener = new ROSLIB.Topic({
-    ros : ros,
-    name : '/odom',
-    messageType : 'nav_msgs/Odometry'
-  });
-  
-  listener.subscribe
-  (
-      function(message) 
-      {
-          document.getElementById("px").innerHTML = "X: " + JSON.stringify(message.pose.pose.position.x);
-          document.getElementById("py").innerHTML = "Y: " + JSON.stringify(message.pose.pose.position.y);
-          document.getElementById("pz").innerHTML = "Z: " + JSON.stringify(message.pose.pose.position.z);          
-      }
-  );
+  // Publishing a Topic
+  // ------------------
 
+  var cmdVel = new ROSLIB.Topic({
+    ros : ros,
+    name : '/cmd_vel',
+    messageType : 'geometry_msgs/Twist'
+  });
+  var takeoff = new ROSLIB.Topic({
+    ros : ros,
+    name : '/ardrone/takeoff',
+    messageType : 'std_msgs/Empty'
+  });
+  var land = new ROSLIB.Topic({
+    ros : ros,
+    name : '/ardrone/land',
+    messageType : 'std_msgs/Empty'
+  });
+
+
+  var move_takeoff = new ROSLIB.Message({});
   
-  
+  var move_land = new ROSLIB.Message({});
+
+  var move_forward = new ROSLIB.Message({
+    linear : {
+      x : 1,
+      y : 0,
+      z : 0
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  });
+  var move_back = new ROSLIB.Message({
+    linear : {
+      x : -1,
+      y : 0,
+      z : 0
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  });
+  var move_left = new ROSLIB.Message({
+    linear : {
+      x : 0,
+      y : 0,
+      z : 0
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 1
+    }
+  });
+  var move_right = new ROSLIB.Message({
+    linear : {
+      x : 0,
+      y : 0,
+      z : 0
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : -1
+    }
+  });
+  var stop = new ROSLIB.Message({
+    linear : {
+      x : 0,
+      y : 0,
+      z : 0
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  });
+  var move_up = new ROSLIB.Message({
+    linear : {
+      x : 0,
+      y : 0,
+      z : 1
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  });
+  var move_down = new ROSLIB.Message({
+    linear : {
+      x : 0,
+      y : 0,
+      z : -1
+    },
+    angular : {
+      x : 0,
+      y : 0,
+      z : 0
+    }
+  });
+
+  // Subscribing to a Topic
+  // ----------------------
+  //
+  //var listener = new ROSLIB.Topic({
+  //  ros : ros,
+  //  name : '/listener',
+  //  messageType : 'std_msgs/String'
+  //});
+//
+  //listener.subscribe(function(message) {
+  //  console.log('Received message on ' + listener.name + ': ' + message.data);
+  //  listener.unsubscribe();
+  //});
+
+
 </script>
 </head>
 
 <body>
-  <div id="px"></div>
-  <div id="py"></div>
-  <div id="pz"></div>
+ <button onclick=takeoff.publish(move_takeoff)>
+  Takeoff
+ </button>
+ <button onclick=land.publish(move_land)>
+  Land
+</button>
+<br>
+<button onclick=cmdVel.publish(move_forward)>
+  Move Forward
+</button>
+<button onclick=cmdVel.publish(move_back)>
+  Move Backward
+</button> 
+<button onclick=cmdVel.publish(move_left)>
+  Move Left
+</button>
+<button onclick=cmdVel.publish(move_right)>
+  Move Right
+</button>
+<br>
+<button onclick=cmdVel.publish(move_up)>
+  Move Up
+</button>
+<button onclick=cmdVel.publish(move_down)>
+  Move Down
+</button>
+<br>
+<button onclick=cmdVel.publish(stop)>
+  Stop
+</button>
 </body>
 </html>

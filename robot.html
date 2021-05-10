@@ -50,55 +50,7 @@
   
   var move_land = new ROSLIB.Message({});
 
-  var move_forward = new ROSLIB.Message({
-    linear : {
-      x : 1,
-      y : 0,
-      z : 0
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 0
-    }
-  });
-  var move_back = new ROSLIB.Message({
-    linear : {
-      x : -1,
-      y : 0,
-      z : 0
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 0
-    }
-  });
-  var move_left = new ROSLIB.Message({
-    linear : {
-      x : 0,
-      y : 0,
-      z : 0
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 1
-    }
-  });
-  var move_right = new ROSLIB.Message({
-    linear : {
-      x : 0,
-      y : 0,
-      z : 0
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : -1
-    }
-  });
-  var stop = new ROSLIB.Message({
+  var move = new ROSLIB.Message({
     linear : {
       x : 0,
       y : 0,
@@ -110,50 +62,40 @@
       z : 0
     }
   });
-  var move_up = new ROSLIB.Message({
-    linear : {
-      x : 0,
-      y : 0,
-      z : 1
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 0
+  function message_change(choice){
+    
+    move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+    switch(choice) {
+      case 1: // move forward
+        move.linear.x=1;
+        break;
+      case 2: // move backward
+        move.linear.x=1;
+        break;
+      case 3: // turn left
+        move.angular.z=1;
+        break;
+      case 4: // turn right
+        move.angular.z=-1;
+        break;
+      case 5: // move up
+        move.linear.z=1;
+        break;
+      case 6: // move down
+        move.linear.z=-1;
+        break;
+      case 7: // stop
+        break;
+      default: // no use, default case is just idling here
+        break;
     }
-  });
-  var move_down = new ROSLIB.Message({
-    linear : {
-      x : 0,
-      y : 0,
-      z : -1
-    },
-    angular : {
-      x : 0,
-      y : 0,
-      z : 0
-    }
-  });
-
-  // Subscribing to a Topic
-  // ----------------------
-  //
-  //var listener = new ROSLIB.Topic({
-  //  ros : ros,
-  //  name : '/listener',
-  //  messageType : 'std_msgs/String'
-  //});
-//
-  //listener.subscribe(function(message) {
-  //  console.log('Received message on ' + listener.name + ': ' + message.data);
-  //  listener.unsubscribe();
-  //});
-
-
+    cmdVel.publish(move);
+  }
 </script>
 </head>
 
 <body>
+
  <button onclick=takeoff.publish(move_takeoff)>
   Takeoff
  </button>
@@ -161,28 +103,29 @@
   Land
 </button>
 <br>
-<button onclick=cmdVel.publish(move_forward)>
+<button onclick=message_change(1)>
   Move Forward
 </button>
-<button onclick=cmdVel.publish(move_back)>
+<button onclick=message_change(2)>
   Move Backward
 </button> 
-<button onclick=cmdVel.publish(move_left)>
+<button onclick=message_change(3)>
   Turn Left
 </button>
-<button onclick=cmdVel.publish(move_right)>
+<button onclick=message_change(4)>
   Turn Right
 </button>
 <br>
-<button onclick=cmdVel.publish(move_up)>
+<button onclick=message_change(5)>
   Move Up
 </button>
-<button onclick=cmdVel.publish(move_down)>
+<button onclick=message_change(6)>
   Move Down
 </button>
 <br>
-<button onclick=cmdVel.publish(stop)>
+<button onclick=message_change(7)>
   Stop
 </button>
+
 </body>
 </html>

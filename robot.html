@@ -11,7 +11,7 @@
   // -----------------
 
   var ros = new ROSLIB.Ros({
-    url : 'ws://localhost:9090'
+    url : 'ws://192.168.0.107:9090'  // earlier it was so: url : 'ws://localhost:9090'
   });
 
   ros.on('connection', function() {
@@ -62,40 +62,99 @@
       z : 0
     }
   });
+  var f = b = l = r = u = d = 0; // latches for Forward, Backward, Left, Right, Up & Down
   function message_change(choice){
     
     move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+    
     switch(choice) {
       case 1: // move forward
+        if(this.f == 0){
         move.linear.x=1;
+        this.f=1;
         break;
-      case 2: // move backward
-        move.linear.x=1;
+        }
+      else{
+        this.f = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
+        break;
+      case 2: // move forward
+        if(this.b == 0){
+        move.linear.x=-1;
+        this.b=1;
+        }
+      else{
+        this.b = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
         break;
       case 3: // turn left
-        move.angular.z=1;
+        if(this.l == 0){
+          move.linear.x=1;
+          move.angular.z=1;
+          this.l=1;
+        }
+      else{
+        this.l = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
         break;
       case 4: // turn right
-        move.angular.z=-1;
+        if(this.r == 0){
+          move.linear.x=1;
+          move.angular.z=-1;
+        this.r=1;
+        }
+      else{
+        this.r = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
         break;
       case 5: // move up
+        if(this.u == 0){
         move.linear.z=1;
+        this.u=1;
+        }
+      else{
+        this.u = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
         break;
       case 6: // move down
+        if(this.d == 0){
         move.linear.z=-1;
+        this.d=1;
+        }
+      else{
+        this.d = 0;
+        move.linear.x = move.linear.y = move.linear.z = move.angular.x = move.angular.y = move.angular.z = 0;
+      }
         break;
-      case 7: // stop
+      case 7: // stop and reset all latches
+      var f = b = l = r = u = d = 0;
         break;
       default: // no use, default case is just idling here
         break;
     }
     cmdVel.publish(move);
   }
+  
 </script>
+<style type="text/css">
+  #maincontainer 
+  {   
+  top:0px;
+  padding-top:0;
+  margin:auto; position:relative;
+  width: 200px;
+  height: 10px;
+  }
+    </style>
 </head>
 
 <body>
-
+<div id="controller">
  <button onclick=takeoff.publish(move_takeoff)>
   Takeoff
  </button>
@@ -103,18 +162,22 @@
   Land
 </button>
 <br>
+<div style="text-align:center;width:480px;">
 <button onclick=message_change(1)>
   Move Forward
 </button>
-<button onclick=message_change(2)>
-  Move Backward
-</button> 
-<button onclick=message_change(3)>
+<br>
+<button onclick=message_change(3) style="margin:30px;">
   Turn Left
 </button>
-<button onclick=message_change(4)>
+<button onclick=message_change(4) style="margin:30px;">
   Turn Right
 </button>
+<br>
+<button onclick=message_change(2)>
+  Move Backward
+</button>
+</div> 
 <br>
 <button onclick=message_change(5)>
   Move Up
@@ -126,6 +189,6 @@
 <button onclick=message_change(7)>
   Stop
 </button>
-
+</div>
 </body>
 </html>

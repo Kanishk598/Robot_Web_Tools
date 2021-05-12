@@ -44,7 +44,17 @@
     name : '/ardrone/land',
     messageType : 'std_msgs/Empty'
   });
-
+  var imageTopic = new ROSLIB.Topic({
+    ros : ros,
+    name : '/ardrone/bottom/image_raw/compressed',
+    messageType : 'sensor_msgs/CompressedImage'
+});
+imageTopic.subscribe(function(message)
+{
+  var imagedata = "data:image/jpg;base64," + message.data;
+   document.getElementById('xy_image').setAttribute('src', imagedata);
+   imageTopic.unsubscribe();
+});
 
   var move_takeoff = new ROSLIB.Message({});
   
